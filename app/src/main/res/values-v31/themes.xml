@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material You / Dynamic Colors theme for Android 12+ (API 31+) -->
+    <style name="AppTheme" parent="Theme.Material3.DayNight">
+        <!-- Dynamic color attributes from system wallpaper (Monet engine) -->
+        <item name="colorPrimary">@android:color/system_accent1_600</item>
+        <item name="colorPrimaryDark">@android:color/system_accent1_700</item>
+        <item name="colorAccent">@android:color/system_accent3_400</item>
+        <item name="colorOnPrimary">@android:color/system_accent1_0</item>
+        <item name="colorSecondary">@android:color/system_accent2_600</item>
+        <item name="colorOnSecondary">@android:color/system_accent2_0</item>
+
+        <item name="textColorPrimary">?android:attr/textColorPrimary</item>
+        <item name="textColorSecondary">?android:attr/textColorSecondary</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.Material3.Dark.ActionBar">
+        <item name="iconTint">@android:color/system_accent1_0</item>
+    </style>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.Material3.Light" />
+</resources>

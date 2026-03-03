@@ -196,13 +196,12 @@ public class RemotesFragment extends Fragment implements RemotesRecyclerViewAdap
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_hidden_remotes:
-                showHiddenRemotesDialog();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-
+        int id = item.getItemId();
+        if (id == R.id.action_hidden_remotes) {
+            showHiddenRemotesDialog();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -274,35 +273,29 @@ public class RemotesFragment extends Fragment implements RemotesRecyclerViewAdap
         PopupMenu popupMenu = new PopupMenu(context, view);
         popupMenu.getMenuInflater().inflate(R.menu.remote_options, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.action_remote_properties:
-                    showRemotePropertiesDialog(remoteItem);
-                    break;
-                case R.id.action_delete:
-                    deleteRemote(remoteItem);
-                    break;
-                case R.id.action_remote_rename:
-                    renameRemote(remoteItem);
-                    break;
-                case R.id.action_pin:
-                    if (remoteItem.isPinned()) {
-                        unPinRemote(remoteItem);
-                    } else {
-                        pinRemote(remoteItem);
-                    }
-                    break;
-                case R.id.action_favorite:
-                    if (remoteItem.isDrawerPinned()) {
-                        unpinFromDrawer(remoteItem);
-                    } else {
-                        pinToDrawer(remoteItem);
-                    }
-                    break;
-                case R.id.action_add_to_home_screen:
-                    AppShortcutsHelper.addRemoteToHomeScreen(context, remoteItem);
-                    break;
-                default:
-                    return false;
+            int id = item.getItemId();
+            if (id == R.id.action_remote_properties) {
+                showRemotePropertiesDialog(remoteItem);
+            } else if (id == R.id.action_delete) {
+                deleteRemote(remoteItem);
+            } else if (id == R.id.action_remote_rename) {
+                renameRemote(remoteItem);
+            } else if (id == R.id.action_pin) {
+                if (remoteItem.isPinned()) {
+                    unPinRemote(remoteItem);
+                } else {
+                    pinRemote(remoteItem);
+                }
+            } else if (id == R.id.action_favorite) {
+                if (remoteItem.isDrawerPinned()) {
+                    unpinFromDrawer(remoteItem);
+                } else {
+                    pinToDrawer(remoteItem);
+                }
+            } else if (id == R.id.action_add_to_home_screen) {
+                AppShortcutsHelper.addRemoteToHomeScreen(context, remoteItem);
+            } else {
+                return false;
             }
             return true;
         });

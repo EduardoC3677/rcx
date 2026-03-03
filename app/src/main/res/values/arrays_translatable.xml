@@ -22,6 +22,10 @@
         <item>Google Photos</item>
         <item>Union</item>
         <item>Mega</item>
+        <item>Amazon S3</item>
+        <item>Proton Drive</item>
+        <item>Pixeldrain</item>
+        <item>Files.com</item>
     </array>
 
     <array name="provider_summaries">
@@ -46,5 +50,9 @@
         <item>Cloud Photo Storage</item>
         <item>Merge multiple remotes into one</item>
         <item>Cloud file storage</item>
+        <item>S3 compatible object storage (AWS, Minio, etc.)</item>
+        <item>End-to-end encrypted cloud storage</item>
+        <item>File sharing and storage</item>
+        <item>Enterprise file sharing platform</item>
     </array>
 </resources>

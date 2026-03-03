@@ -326,35 +326,32 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
-        switch (id) {
-            case R.id.nav_remotes:
-                startRemotesFragment();
-                break;
-            case R.id.nav_import:
-                Uri configUri;
-                if (rclone.isConfigFileCreated()) {
-                    warnUserAboutOverwritingConfiguration();
-                } else if(null != (configUri = rclone.searchExternalConfig())) {
-                    askUseExternalConfig(configUri);
-                } else {
-                    importConfigFile();
-                }
-                break;
-            case R.id.nav_export:
-                if (rclone.isConfigFileCreated()) {
-                    exportConfigFile();
-                } else {
-                    Toasty.info(this,  getString(R.string.no_config_found), Toast.LENGTH_SHORT, true).show();
-                }
-                break;
-            case R.id.nav_settings:
-                Intent settingsIntent = new Intent(this, SettingsActivity.class);
-                tryStartActivityForResult(this, settingsIntent, SETTINGS_CODE);
-                break;
-            case R.id.nav_about:
-                Intent aboutIntent = new Intent(this, AboutActivity.class);
-                startActivity(aboutIntent);
-                break;
+        if (id == R.id.nav_remotes) {
+            startRemotesFragment();
+        } else if (id == R.id.nav_import) {
+            Uri configUri;
+            if (rclone.isConfigFileCreated()) {
+                warnUserAboutOverwritingConfiguration();
+            } else if(null != (configUri = rclone.searchExternalConfig())) {
+                askUseExternalConfig(configUri);
+            } else {
+                importConfigFile();
+            }
+        } else if (id == R.id.nav_export) {
+            if (rclone.isConfigFileCreated()) {
+                exportConfigFile();
+            } else {
+                Toasty.info(this,  getString(R.string.no_config_found), Toast.LENGTH_SHORT, true).show();
+            }
+        } else if (id == R.id.nav_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            tryStartActivityForResult(this, settingsIntent, SETTINGS_CODE);
+        } else if (id == R.id.nav_about) {
+            Intent aboutIntent = new Intent(this, AboutActivity.class);
+            startActivity(aboutIntent);
+        } else if (id == R.id.nav_tools) {
+            Intent toolsIntent = new Intent(this, ca.pkay.rcloneexplorer.features.ToolsActivity.class);
+            startActivity(toolsIntent);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -486,11 +483,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void exportConfigFile() {
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("text/*");
-        intent.putExtra(Intent.EXTRA_TITLE, "rclone.conf");
-        tryStartActivityForResult(this, intent, WRITE_REQUEST_CODE);
+        // Show PC compatibility info before exporting
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.export_rclone_config)
+                .setMessage(R.string.config_pc_compatible)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("text/*");
+                    intent.putExtra(Intent.EXTRA_TITLE, "rclone.conf");
+                    tryStartActivityForResult(this, intent, WRITE_REQUEST_CODE);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     public void requestPermissions() {
@@ -501,6 +506,16 @@ public class MainActivity extends AppCompatActivity
             RefreshLocalAliases refresh = new RefreshLocalAliases();
             if (refresh.isRequired()) {
                 refresh.execute();
+            }
+        }
+
+        // Request POST_NOTIFICATIONS permission for Android 13+ (API 33)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        REQUEST_PERMISSION_CODE);
             }
         }
     }

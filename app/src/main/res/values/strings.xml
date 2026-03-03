@@ -518,4 +518,87 @@
     <string name="pref_send_sigquit_summary">Stops all rclone processes with kill -SIGQUIT. Requires logging enabled.</string>
     <string name="abi_not_supported_arm_downgrade">Unfortunately, your device does not support this version of RCX. Try the armeabi-v7a APK from github.com/x0b/rcx instead.</string>
     <string name="abi_not_supported">Unfortunately, your device does not support this version of RCX.</string>
+
+    <!-- New features - Bisync, Check, Cleanup, Dedupe -->
+    <string name="tools">Tools</string>
+    <string name="bisync">Bisync</string>
+    <string name="bisync_description">Bidirectional sync between two remotes</string>
+    <string name="bisync_resync">Perform initial resync</string>
+    <string name="bisync_dry_run">Dry run (preview changes)</string>
+    <string name="bisync_in_progress">Bisync in progress…</string>
+    <string name="bisync_complete">Bisync complete</string>
+    <string name="bisync_failed">Bisync failed</string>
+
+    <string name="check">Check integrity</string>
+    <string name="check_description">Verify file integrity between source and destination</string>
+    <string name="check_one_way">One-way check</string>
+    <string name="check_matching">Matching files: %d</string>
+    <string name="check_differing">Differing files: %d</string>
+    <string name="check_missing_src">Missing on source: %d</string>
+    <string name="check_missing_dst">Missing on destination: %d</string>
+    <string name="check_complete">Check complete</string>
+    <string name="cryptcheck">Verify encryption</string>
+
+    <string name="cleanup">Cleanup</string>
+    <string name="cleanup_description">Remove incomplete uploads and empty directories</string>
+    <string name="cleanup_complete">Cleanup complete: %d items cleaned</string>
+
+    <string name="dedupe">Deduplicate</string>
+    <string name="dedupe_description">Find and remove duplicate files</string>
+    <string name="dedupe_mode">Deduplication mode</string>
+    <string name="dedupe_skip">Skip duplicates</string>
+    <string name="dedupe_newest">Keep newest</string>
+    <string name="dedupe_oldest">Keep oldest</string>
+    <string name="dedupe_largest">Keep largest</string>
+    <string name="dedupe_smallest">Keep smallest</string>
+    <string name="dedupe_rename">Rename duplicates</string>
+    <string name="dedupe_found">Duplicates found: %d</string>
+    <string name="dedupe_removed">Duplicates removed: %d</string>
+
+    <!-- Config Encryption -->
+    <string name="config_encryption">Config Encryption</string>
+    <string name="config_encryption_description">Encrypt/decrypt your rclone config file for safe transfer between devices</string>
+    <string name="config_is_encrypted">Config is encrypted</string>
+    <string name="config_is_not_encrypted">Config is not encrypted</string>
+    <string name="encrypt_config">Encrypt config</string>
+    <string name="decrypt_config">Remove encryption</string>
+    <string name="enter_encryption_password">Enter encryption password</string>
+    <string name="config_encrypted_success">Config encrypted successfully</string>
+    <string name="config_decrypted_success">Config decrypted successfully</string>
+    <string name="config_encryption_failed">Config encryption operation failed</string>
+
+    <!-- Bandwidth Control -->
+    <string name="bandwidth_limit">Bandwidth limit</string>
+    <string name="bandwidth_limit_description">Limit upload/download speed</string>
+    <string name="bandwidth_upload_limit">Upload limit</string>
+    <string name="bandwidth_download_limit">Download limit</string>
+    <string name="bandwidth_unlimited">Unlimited</string>
+    <string name="pref_key_bwlimit_enabled" translatable="false">pref_key_bwlimit_enabled</string>
+
+    <!-- Storage Analysis -->
+    <string name="storage_analysis">Storage Analysis</string>
+    <string name="storage_analysis_description">Analyze storage usage of remotes</string>
+    <string name="total_size">Total size: %s</string>
+    <string name="total_files">Total files: %d</string>
+    <string name="analyzing">Analyzing…</string>
+    <string name="tree_view">Tree view</string>
+
+    <!-- Config compatibility -->
+    <string name="config_pc_compatible">This config file is fully compatible with rclone on Linux/Windows/macOS</string>
+    <string name="config_import_from_pc">Import config from PC</string>
+    <string name="config_export_to_pc">Export config to PC</string>
+
+    <!-- Notification permission -->
+    <string name="notification_permission_title">Notification Permission</string>
+    <string name="notification_permission_message">RCX needs notification permission to show transfer progress and completion status.</string>
+
+    <!-- New providers -->
+    <string name="s3_access_key_hint">Access Key ID</string>
+    <string name="s3_secret_key_hint">Secret Access Key</string>
+    <string name="s3_region_hint">Region (e.g. us-east-1)</string>
+    <string name="s3_endpoint_hint">Endpoint (leave empty for AWS)</string>
+    <string name="proton_username_hint">Proton username</string>
+    <string name="proton_password_hint">Proton password</string>
+    <string name="api_key_hint">API Key</string>
+    <string name="site_url_hint">Site URL</string>
 </resources>
