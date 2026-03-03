@@ -61,6 +61,17 @@ public class RemoteItem implements Comparable<RemoteItem>, Parcelable {
     public static final int YANDEX = 32;
     public static final int HTTP = 33;
     public static final int PREMIUMIZEME = 34;
+    public static final int STORJ = 35;
+    public static final int SEAFILE = 36;
+    public static final int ZOHO = 37;
+    public static final int INTERNET_ARCHIVE = 38;
+    public static final int PIKPAK = 39;
+    public static final int COMBINE = 40;
+    public static final int COMPRESS = 41;
+    public static final int ORACLEOBJECTSTORAGE = 42;
+    public static final int HASHER = 43;
+    public static final int HDFS = 44;
+    public static final int NETSTORAGE = 45;
 
     private String name;
     private int type;
@@ -342,6 +353,29 @@ public class RemoteItem implements Comparable<RemoteItem>, Parcelable {
                 return PUTIO;
             case "premiumizeme":
                 return PREMIUMIZEME;
+            case "storj":
+            case "tardigrade":
+                return STORJ;
+            case "seafile":
+                return SEAFILE;
+            case "zoho":
+                return ZOHO;
+            case "internetarchive":
+                return INTERNET_ARCHIVE;
+            case "pikpak":
+                return PIKPAK;
+            case "combine":
+                return COMBINE;
+            case "compress":
+                return COMPRESS;
+            case "oracleobjectstorage":
+                return ORACLEOBJECTSTORAGE;
+            case "hasher":
+                return HASHER;
+            case "hdfs":
+                return HDFS;
+            case "netstorage":
+                return NETSTORAGE;
             default:
                 return -1;
         }
@@ -394,6 +428,18 @@ public class RemoteItem implements Comparable<RemoteItem>, Parcelable {
                     return R.drawable.ic_webdav;
                 case RemoteItem.YANDEX:
                     return R.drawable.ic_yandex_mono;
+                case RemoteItem.STORJ:
+                case RemoteItem.SEAFILE:
+                case RemoteItem.ZOHO:
+                case RemoteItem.INTERNET_ARCHIVE:
+                case RemoteItem.PIKPAK:
+                case RemoteItem.COMBINE:
+                case RemoteItem.COMPRESS:
+                case RemoteItem.ORACLEOBJECTSTORAGE:
+                case RemoteItem.HASHER:
+                case RemoteItem.HDFS:
+                case RemoteItem.NETSTORAGE:
+                    return R.drawable.ic_cloud;
                 default:
                     return R.drawable.ic_cloud;
             }

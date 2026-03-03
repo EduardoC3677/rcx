@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity
     private static final int SETTINGS_CODE = 71; // code when coming back from settings
     private static final int WRITE_REQUEST_CODE = 81; // code when exporting config
     private static final int ONBOARDING_REQUEST = 93;
+    private static final int NOTIFICATION_PERMISSION_CODE = 500;
     private final String FILE_EXPLORER_FRAGMENT_TAG = "ca.pkay.rcexplorer.MAIN_ACTIVITY_FILE_EXPLORER_TAG";
     private NavigationView navigationView;
     private DrawerLayout drawer;
@@ -100,6 +101,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Enable edge-to-edge display on Android 15+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            getWindow().setDecorFitsSystemWindows(false);
+        }
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean enableCrashReports = sharedPreferences.getBoolean(
@@ -501,6 +507,14 @@ public class MainActivity extends AppCompatActivity
             RefreshLocalAliases refresh = new RefreshLocalAliases();
             if (refresh.isRequired()) {
                 refresh.execute();
+            }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    NOTIFICATION_PERMISSION_CODE);
             }
         }
     }
