@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          xmlns:tools="http://schemas.android.com/tools"
-          package="ca.pkay.rcloneexplorer">
+          xmlns:tools="http://schemas.android.com/tools">
 
     <uses-feature android:name="android.software.leanback" android:required="false"/>
     <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
+            android:name=".RcxApplication"
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
@@ -24,9 +28,10 @@
             android:requestLegacyExternalStorage="true"
             android:extractNativeLibs="true"
             tools:ignore="GoogleAppIndexingWarning"
-            tools:targetApi="29">
+            tools:targetApi="36">
 
         <activity android:name=".OnboardingActivity"
+            android:exported="false"
             android:theme="@style/OnboardingTheme">
         </activity>
 
@@ -34,6 +39,7 @@
             android:name=".MainActivity"
             android:label="@string/app_short_name"
             android:launchMode="singleTop"
+            android:exported="true"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -57,13 +63,20 @@
             </intent-filter>
         </provider>
 
-        <service android:name=".Services.DownloadService" />
-        <service android:name=".Services.UploadService" />
-        <service android:name=".Services.StreamingService" />
-        <service android:name=".Services.ThumbnailsLoadingService" />
-        <service android:name=".Services.DeleteService" />
-        <service android:name=".Services.MoveService" />
-        <service android:name=".Services.SyncService" />
+        <service android:name=".Services.DownloadService"
+            android:foregroundServiceType="dataSync" />
+        <service android:name=".Services.UploadService"
+            android:foregroundServiceType="dataSync" />
+        <service android:name=".Services.StreamingService"
+            android:foregroundServiceType="mediaPlayback" />
+        <service android:name=".Services.ThumbnailsLoadingService"
+            android:foregroundServiceType="dataSync" />
+        <service android:name=".Services.DeleteService"
+            android:foregroundServiceType="dataSync" />
+        <service android:name=".Services.MoveService"
+            android:foregroundServiceType="dataSync" />
+        <service android:name=".Services.SyncService"
+            android:foregroundServiceType="dataSync" />
         <service
                 android:name=".Services.RcdService"
                 android:foregroundServiceType="dataSync"/>
@@ -71,14 +84,22 @@
             android:name=".Services.ReportService"
             android:foregroundServiceType="dataSync" />
 
-        <receiver android:name=".BroadcastReceivers.DownloadCancelAction" />
-        <receiver android:name=".BroadcastReceivers.UploadCancelAction" />
-        <receiver android:name=".BroadcastReceivers.ServeCancelAction" />
-        <receiver android:name=".BroadcastReceivers.DeleteCancelAction" />
-        <receiver android:name=".BroadcastReceivers.MoveCancelAction" />
-        <receiver android:name=".BroadcastReceivers.SyncCancelAction" />
-        <receiver android:name=".Services.RcdService$RcdServiceAction"/>
-        <receiver android:name=".Services.ReportService$StopCollectionReceiver" />
+        <receiver android:name=".BroadcastReceivers.DownloadCancelAction"
+            android:exported="false" />
+        <receiver android:name=".BroadcastReceivers.UploadCancelAction"
+            android:exported="false" />
+        <receiver android:name=".BroadcastReceivers.ServeCancelAction"
+            android:exported="false" />
+        <receiver android:name=".BroadcastReceivers.DeleteCancelAction"
+            android:exported="false" />
+        <receiver android:name=".BroadcastReceivers.MoveCancelAction"
+            android:exported="false" />
+        <receiver android:name=".BroadcastReceivers.SyncCancelAction"
+            android:exported="false" />
+        <receiver android:name=".Services.RcdService$RcdServiceAction"
+            android:exported="false" />
+        <receiver android:name=".Services.ReportService$StopCollectionReceiver"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -93,20 +114,24 @@
         <activity
             android:name=".AboutActivity"
             android:label="@string/title_activity_about"
+            android:exported="false"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ChangelogActivity"
             android:label="@string/title_activity_changelog"
+            android:exported="false"
             android:parentActivityName=".AboutActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ContributorActivity"
             android:label="@string/title_activity_contributors"
+            android:exported="false"
             android:parentActivityName=".AboutActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".AboutLibsActivity"
             android:label="@string/credits_libraries"
+            android:exported="false"
             android:parentActivityName=".AboutActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -122,6 +147,7 @@
         <activity
             android:name=".SharingActivity"
             android:label="@string/app_name"
+            android:exported="true"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -156,10 +182,12 @@
         </activity>
         <activity
             android:name=".FilePicker"
+            android:exported="false"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RemoteConfig.RemoteConfig"
             android:label="@string/title_activity_remote_config"
+            android:exported="false"
             android:theme="@style/AppTheme.NoActionBar" />
 
     </application>
