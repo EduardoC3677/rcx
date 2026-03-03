@@ -42,14 +42,14 @@ class SyncWorker(appContext: Context, params: WorkerParameters) : CoroutineWorke
             val exitCode = process?.exitValue() ?: -1
             if (exitCode == 0) {
                 FLog.i(TAG, "Scheduled sync completed successfully")
-                Result.success()
+                return@withContext Result.success()
             } else {
                 FLog.w(TAG, "Scheduled sync finished with exit code $exitCode")
-                Result.retry()
+                return@withContext Result.retry()
             }
         } catch (e: Exception) {
             FLog.e(TAG, "Scheduled sync failed", e)
-            Result.failure()
+            return@withContext Result.failure()
         }
     }
 }

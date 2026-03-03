@@ -9,7 +9,7 @@ android {
         }
     }
     compileSdk 36
-    ndkVersion '27.3.13750724'
+    ndkVersion '27.2.12479018'
     defaultConfig {
         applicationId 'io.github.x0b.rcx'
         minSdk 24

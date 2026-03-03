@@ -3,60 +3,122 @@ name: Android CI
 on:
   push:
     branches:
-      - 'dev'
+      - main
+      - dev
+      - 'copilot/**'
+      - 'feature/**'
+      - 'fix/**'
   pull_request:
-    branches-ignore:
-      - 'dev'
+    branches:
+      - main
+      - dev
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-all:
 
-    runs-on: ubuntu-20.04
+  # ── Unit tests (fast, no NDK required) ───────────────────────────────────────
+  unit-test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Run unit tests
+        run: ./gradlew testOssDebugUnitTest --no-daemon
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: app/build/reports/tests/testOssDebugUnitTest/
+          retention-days: 7
+
+  # ── Debug APK build ───────────────────────────────────────────────────────────
+  build-debug:
+    name: Build Debug APKs
+    runs-on: ubuntu-latest
+    needs: unit-test
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
-    - name: Set up Go 1.16
-      uses: actions/setup-go@v1
-      with:
-        go-version: 1.16
-      id: go
-    - name: Force NDK version
-      run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;22.1.7171670"
-    - name: Build rclone
-      run: ./gradlew rclone:buildNative
-    - name: Build app
-      run: ./gradlew assembleOssDebug
-    - name: Upload APK (arm)
-      uses: actions/upload-artifact@v2
-      with:
-        name: arm.apk
-        path: app/build/outputs/apk/oss/debug/app-oss-armeabi-v7a-debug.apk
-        retention-days: 3
-    - name: Upload APK (arm64)
-      uses: actions/upload-artifact@v2
-      with:
-        name: arm64.apk
-        path: app/build/outputs/apk/oss/debug/app-oss-arm64-v8a-debug.apk
-        retention-days: 3
-    - name: Upload APK (x86)
-      uses: actions/upload-artifact@v2
-      with:
-        name: x86.apk
-        path: app/build/outputs/apk/oss/debug/app-oss-x86-debug.apk
-        retention-days: 3
-    - name: Upload APK (arm)
-      uses: actions/upload-artifact@v2
-      with:
-        name: x64.apk
-        path: app/build/outputs/apk/oss/debug/app-oss-x86_64-debug.apk
-        retention-days: 3
-    - name: Upload APK (universal)
-      uses: actions/upload-artifact@v2
-      with:
-        name: universal.apk
-        path: app/build/outputs/apk/oss/debug/app-oss-universal-debug.apk
-        retention-days: 14
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up Go 1.22
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: true
+
+      # Cache the compiled rclone .so libraries keyed on rclone/build.gradle.
+      # A cache hit skips the ~15-minute rclone compilation step entirely.
+      - name: Cache rclone native libraries
+        id: cache-rclone
+        uses: actions/cache@v4
+        with:
+          path: app/lib
+          key: rclone-libs-${{ runner.os }}-${{ hashFiles('rclone/build.gradle') }}
+
+      - name: Install NDK 27.2.12479018
+        if: steps.cache-rclone.outputs.cache-hit != 'true'
+        run: |
+          echo "y" | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager \
+            "ndk;27.2.12479018" --sdk_root=${ANDROID_HOME}
+
+      - name: Build rclone native libraries
+        if: steps.cache-rclone.outputs.cache-hit != 'true'
+        run: ./gradlew rclone:buildNative --no-daemon
+
+      - name: Build OSS debug APKs
+        run: ./gradlew assembleOssDebug --no-daemon
+
+      - name: Upload APK - arm (armeabi-v7a)
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-arm
+          path: app/build/outputs/apk/oss/debug/app-oss-armeabi-v7a-debug.apk
+          retention-days: 7
+
+      - name: Upload APK - arm64 (arm64-v8a)
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-arm64
+          path: app/build/outputs/apk/oss/debug/app-oss-arm64-v8a-debug.apk
+          retention-days: 7
+
+      - name: Upload APK - x86
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-x86
+          path: app/build/outputs/apk/oss/debug/app-oss-x86-debug.apk
+          retention-days: 7
+
+      - name: Upload APK - x86_64
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-x86_64
+          path: app/build/outputs/apk/oss/debug/app-oss-x86_64-debug.apk
+          retention-days: 7
+
+      - name: Upload APK - universal
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-universal
+          path: app/build/outputs/apk/oss/debug/app-oss-universal-debug.apk
+          retention-days: 14

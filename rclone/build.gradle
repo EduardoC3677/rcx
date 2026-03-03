@@ -19,7 +19,7 @@
 
 // Rclone version - any git reference (tag, branch, hash) should work
 def buildTag = 'v1.68.2'
-ext.ndkVersion = '27.3.13750724'
+ext.ndkVersion = '27.2.12479018'
 
 //
 // DO NOT EDIT ANYTHING BELOW
