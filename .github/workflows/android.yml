@@ -1,9 +1,11 @@
 name: Android CI
 
 on:
+  workflow_call:
   push:
     branches:
       - 'dev'
+      - 'copilot/**'
   pull_request:
     branches-ignore:
       - 'dev'
@@ -31,31 +33,31 @@ jobs:
     - name: Build app
       run: ./gradlew assembleOssDebug
     - name: Upload APK (arm)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: arm.apk
         path: app/build/outputs/apk/oss/debug/app-oss-armeabi-v7a-debug.apk
         retention-days: 3
     - name: Upload APK (arm64)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: arm64.apk
         path: app/build/outputs/apk/oss/debug/app-oss-arm64-v8a-debug.apk
         retention-days: 3
     - name: Upload APK (x86)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: x86.apk
         path: app/build/outputs/apk/oss/debug/app-oss-x86-debug.apk
         retention-days: 3
     - name: Upload APK (arm)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: x64.apk
         path: app/build/outputs/apk/oss/debug/app-oss-x86_64-debug.apk
         retention-days: 3
     - name: Upload APK (universal)
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: universal.apk
         path: app/build/outputs/apk/oss/debug/app-oss-universal-debug.apk
