@@ -18,6 +18,7 @@ class SyncWorker(appContext: Context, params: WorkerParameters) : CoroutineWorke
     companion object {
         const val KEY_REMOTE_NAME = "remote_name"
         const val KEY_REMOTE_TYPE = "remote_type"
+        const val KEY_REMOTE_TYPE_STRING = "remote_type_string"
         const val KEY_SOURCE_PATH = "source_path"
         const val KEY_DEST_PATH = "dest_path"
         const val KEY_SYNC_DIRECTION = "sync_direction"
@@ -27,13 +28,14 @@ class SyncWorker(appContext: Context, params: WorkerParameters) : CoroutineWorke
     override suspend fun doWork(): Result = withContext(Dispatchers.IO) {
         val remoteName = inputData.getString(KEY_REMOTE_NAME) ?: return@withContext Result.failure()
         val remoteType = inputData.getInt(KEY_REMOTE_TYPE, -1)
+        val remoteTypeString = inputData.getString(KEY_REMOTE_TYPE_STRING) ?: remoteType.toString()
         val sourcePath = inputData.getString(KEY_SOURCE_PATH) ?: return@withContext Result.failure()
         val destPath = inputData.getString(KEY_DEST_PATH) ?: return@withContext Result.failure()
         val syncDirection = inputData.getInt(KEY_SYNC_DIRECTION, Rclone.SYNC_DIRECTION_LOCAL_TO_REMOTE)
 
         try {
             val rclone = Rclone(applicationContext)
-            val remote = RemoteItem(remoteName, remoteType.toString())
+            val remote = RemoteItem(remoteName, remoteTypeString)
             FLog.i(TAG, "Starting scheduled sync: $remoteName $sourcePath -> $destPath")
             val process = rclone.sync(remote, sourcePath, destPath, syncDirection)
             process?.waitFor()
