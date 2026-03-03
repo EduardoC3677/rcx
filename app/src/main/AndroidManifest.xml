@@ -201,6 +201,11 @@
             android:label="@string/title_activity_remote_config"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false" />
+        <activity
+            android:name=".features.ToolsActivity"
+            android:label="@string/tools"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:exported="false" />
 
     </application>
 

@@ -53,7 +53,7 @@ class RcloneCheck(private val context: Context) {
         if (oneWay) args.add("--one-way")
 
         val command = buildCommand(args)
-        val env = rclone.rcloneEnv
+        val env = rclone.getRcloneEnv()
 
         try {
             val process = Runtime.getRuntime().exec(command, env)
@@ -121,7 +121,7 @@ class RcloneCheck(private val context: Context) {
         val crypt = "${cryptRemote.name}:$cryptPath"
 
         val command = buildCommand(listOf("cryptcheck", source, crypt))
-        val env = rclone.rcloneEnv
+        val env = rclone.getRcloneEnv()
 
         try {
             val process = Runtime.getRuntime().exec(command, env)

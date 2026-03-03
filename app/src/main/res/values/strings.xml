@@ -520,6 +520,7 @@
     <string name="abi_not_supported">Unfortunately, your device does not support this version of RCX.</string>
 
     <!-- New features - Bisync, Check, Cleanup, Dedupe -->
+    <string name="tools">Tools</string>
     <string name="bisync">Bisync</string>
     <string name="bisync_description">Bidirectional sync between two remotes</string>
     <string name="bisync_resync">Perform initial resync</string>

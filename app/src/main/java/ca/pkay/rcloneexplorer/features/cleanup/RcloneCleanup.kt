@@ -57,7 +57,7 @@ class RcloneCleanup(private val context: Context) {
         val rclone = Rclone(context)
         val remotePath = "${remote.name}:$path"
         val command = buildCommand(listOf("cleanup", remotePath))
-        val env = rclone.rcloneEnv
+        val env = rclone.getRcloneEnv()
 
         try {
             val process = Runtime.getRuntime().exec(command, env)
@@ -102,7 +102,7 @@ class RcloneCleanup(private val context: Context) {
         args.add("-v")
 
         val command = buildCommand(args)
-        val env = rclone.rcloneEnv
+        val env = rclone.getRcloneEnv()
 
         try {
             val process = Runtime.getRuntime().exec(command, env)

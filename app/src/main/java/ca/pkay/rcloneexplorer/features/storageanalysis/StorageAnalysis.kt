@@ -46,7 +46,7 @@ class StorageAnalysis(private val context: Context) {
         val rclone = Rclone(context)
         val remotePath = "${remote.name}:$path"
         val command = buildCommand(listOf("size", "--json", remotePath))
-        val env = rclone.rcloneEnv
+        val env = rclone.getRcloneEnv()
 
         try {
             val process = Runtime.getRuntime().exec(command, env)
@@ -85,7 +85,7 @@ class StorageAnalysis(private val context: Context) {
         val rclone = Rclone(context)
         val remotePath = "${remote.name}:$path"
         val command = buildCommand(listOf("lsjson", "--dirs-only", "-R", "--no-modtime", remotePath))
-        val env = rclone.rcloneEnv
+        val env = rclone.getRcloneEnv()
 
         try {
             val process = Runtime.getRuntime().exec(command, env)
@@ -135,7 +135,7 @@ class StorageAnalysis(private val context: Context) {
         val rclone = Rclone(context)
         val remotePath = "${remote.name}:$path"
         val command = buildCommand(listOf("tree", "--level", maxDepth.toString(), remotePath))
-        val env = rclone.rcloneEnv
+        val env = rclone.getRcloneEnv()
 
         try {
             val process = Runtime.getRuntime().exec(command, env)

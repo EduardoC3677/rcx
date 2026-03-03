@@ -355,6 +355,10 @@ public class MainActivity extends AppCompatActivity
                 Intent aboutIntent = new Intent(this, AboutActivity.class);
                 startActivity(aboutIntent);
                 break;
+            case R.id.nav_tools:
+                Intent toolsIntent = new Intent(this, ca.pkay.rcloneexplorer.features.ToolsActivity.class);
+                startActivity(toolsIntent);
+                break;
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -486,11 +490,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void exportConfigFile() {
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("text/*");
-        intent.putExtra(Intent.EXTRA_TITLE, "rclone.conf");
-        tryStartActivityForResult(this, intent, WRITE_REQUEST_CODE);
+        // Show PC compatibility info before exporting
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.export_rclone_config)
+                .setMessage(R.string.config_pc_compatible)
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("text/*");
+                    intent.putExtra(Intent.EXTRA_TITLE, "rclone.conf");
+                    tryStartActivityForResult(this, intent, WRITE_REQUEST_CODE);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     public void requestPermissions() {
