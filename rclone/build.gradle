@@ -105,7 +105,7 @@ task fetchRclone(type: Exec) {
     ignoreExitValue true
     errorOutput = new ByteArrayOutputStream()
     doLast {
-        if (execResult.getExitValue() != 0) {
+        if (executionResult.get().exitValue != 0) {
             throw new GradleException("Error running go get: \n${errorOutput.toString()}")
         }
     }
@@ -139,7 +139,7 @@ task buildArm(type: Exec) {
     ignoreExitValue true
     errorOutput = new ByteArrayOutputStream()
     doLast {
-        if (execResult.getExitValue() != 0) {
+        if (executionResult.get().exitValue != 0) {
             throw new GradleException("Error running go build: \n${errorOutput.toString()}")
         }
     }
