@@ -91,6 +91,10 @@
             android:name=".Services.ReportService"
             android:foregroundServiceType="dataSync"
             android:exported="false" />
+        <service
+            android:name=".features.bisync.BisyncService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false" />
 
         <receiver android:name=".BroadcastReceivers.DownloadCancelAction"
             android:exported="false" />

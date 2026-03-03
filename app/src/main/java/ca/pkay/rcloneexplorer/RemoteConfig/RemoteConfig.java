@@ -182,6 +182,18 @@ public class RemoteConfig extends AppCompatActivity implements RemotesConfigList
             case "MEGA":
                 fragment = MegaConfig.newInstance();
                 break;
+            case "S3":
+                fragment = S3Config.newInstance();
+                break;
+            case "PROTONDRIVE":
+                fragment = ProtonDriveConfig.newInstance();
+                break;
+            case "PIXELDRAIN":
+                fragment = PixeldrainConfig.newInstance();
+                break;
+            case "FILESCOM":
+                fragment = FilesComConfig.newInstance();
+                break;
             default:
                 return;
         }
