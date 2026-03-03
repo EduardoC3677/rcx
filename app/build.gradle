@@ -126,9 +126,9 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     debugImplementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
     // JSON
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.18.3'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.18.3'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.3'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.18.6'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.18.6'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.6'
     // Timestamps
     implementation 'com.github.x0b:rfc3339parser:2.0.0'
     // SAF/WebDAV
