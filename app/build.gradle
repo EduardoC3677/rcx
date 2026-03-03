@@ -132,7 +132,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     debugImplementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
     // JSON
-    def jacksonVersion = '2.16.1'
+    def jacksonVersion = '2.18.6'
     implementation "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
     implementation "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
     implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
