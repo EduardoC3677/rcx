@@ -2,7 +2,6 @@ package ca.pkay.rcloneexplorer.features.bisync
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -56,9 +55,19 @@ class BisyncService : Service() {
             return Service.START_NOT_STICKY
         }
 
-        val remote1 = intent.getParcelableExtra<RemoteItem>(EXTRA_REMOTE1)
+        val remote1 = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(EXTRA_REMOTE1, RemoteItem::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(EXTRA_REMOTE1)
+        }
         val path1 = intent.getStringExtra(EXTRA_PATH1) ?: ""
-        val remote2 = intent.getParcelableExtra<RemoteItem>(EXTRA_REMOTE2)
+        val remote2 = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(EXTRA_REMOTE2, RemoteItem::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(EXTRA_REMOTE2)
+        }
         val path2 = intent.getStringExtra(EXTRA_PATH2) ?: ""
         val resync = intent.getBooleanExtra(EXTRA_RESYNC, false)
         val dryRun = intent.getBooleanExtra(EXTRA_DRY_RUN, false)
@@ -111,7 +120,7 @@ class BisyncService : Service() {
         args.add("--verbose")
 
         try {
-            val command = buildCommand(rclone, args)
+            val command = buildCommand(args)
             val env = rclone.getRcloneEnv()
             currentProcess = Runtime.getRuntime().exec(command, env)
 
@@ -131,7 +140,7 @@ class BisyncService : Service() {
         }
     }
 
-    private fun buildCommand(rclone: Rclone, args: List<String>): Array<String> {
+    private fun buildCommand(args: List<String>): Array<String> {
         val rclonePath = this@BisyncService.applicationInfo.nativeLibraryDir + "/librclone.so"
         val configPath = this@BisyncService.filesDir.path + "/rclone.conf"
         return (listOf(rclonePath, "--config", configPath) + args).toTypedArray()
