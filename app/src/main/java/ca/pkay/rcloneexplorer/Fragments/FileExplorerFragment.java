@@ -299,13 +299,11 @@ public class FileExplorerFragment extends Fragment implements   FileExplorerRecy
         fab = view.findViewById(R.id.fab_fragment_file_explorer_list);
         fab.setOverlayLayout((SpeedDialOverlayLayout)view.findViewById(R.id.fab_overlay));
         fab.setOnActionSelectedListener(actionItem -> {
-            switch (actionItem.getId()) {
-                case R.id.fab_add_folder:
-                    onCreateNewDirectory();
-                    break;
-                case R.id.fab_upload:
-                    onUploadFiles();
-                    break;
+            int actionId = actionItem.getId();
+            if (actionId == R.id.fab_add_folder) {
+                onCreateNewDirectory();
+            } else if (actionId == R.id.fab_upload) {
+                onUploadFiles();
             }
             return false;
         });
@@ -621,42 +619,41 @@ public class FileExplorerFragment extends Fragment implements   FileExplorerRecy
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        switch (id) {
-            case R.id.action_search:
-                searchClicked();
-                return true;
-            case R.id.action_sort:
-                showSortMenu();
-                return true;
-            case R.id.action_select_all:
-                recyclerViewAdapter.toggleSelectAll();
-                return true;
-            case R.id.action_serve:
-                serve();
-                return true;
-            case R.id.action_empty_trash:
-                emptyTrash();
-                return true;
-            case R.id.action_link:
-                new LinkTask().execute(directoryObject.getCurrentPath());
-                return true;
-            case R.id.action_sync:
-                showSyncDialog(directoryObject.getCurrentPath());
-                return true;
-            case R.id.action_go_to:
-                showSFTPgoToDialog();
-                return true;
-            case android.R.id.home:
-                if (isInMoveMode) {
-                    cancelMoveClicked();
-                } else if (recyclerViewAdapter.isInSelectMode()) {
-                    recyclerViewAdapter.cancelSelection();
-                } else {
-                    ((MainActivity)context).openNavigationDrawer();
-                }
-                return true;
-            default:
-                    return super.onOptionsItemSelected(item);
+        if (id == R.id.action_search) {
+            searchClicked();
+            return true;
+        } else if (id == R.id.action_sort) {
+            showSortMenu();
+            return true;
+        } else if (id == R.id.action_select_all) {
+            recyclerViewAdapter.toggleSelectAll();
+            return true;
+        } else if (id == R.id.action_serve) {
+            serve();
+            return true;
+        } else if (id == R.id.action_empty_trash) {
+            emptyTrash();
+            return true;
+        } else if (id == R.id.action_link) {
+            new LinkTask().execute(directoryObject.getCurrentPath());
+            return true;
+        } else if (id == R.id.action_sync) {
+            showSyncDialog(directoryObject.getCurrentPath());
+            return true;
+        } else if (id == R.id.action_go_to) {
+            showSFTPgoToDialog();
+            return true;
+        } else if (id == android.R.id.home) {
+            if (isInMoveMode) {
+                cancelMoveClicked();
+            } else if (recyclerViewAdapter.isInSelectMode()) {
+                recyclerViewAdapter.cancelSelection();
+            } else {
+                ((MainActivity)context).openNavigationDrawer();
+            }
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -1016,34 +1013,30 @@ public class FileExplorerFragment extends Fragment implements   FileExplorerRecy
     private void sortSelected(int sortById, int sortOrderId) {
         List<FileItem> directoryContent = directoryObject.getDirectoryContent();
 
-        switch (sortById) {
-            case R.id.radio_sort_name:
-                if (sortOrderId == R.id.radio_sort_ascending) {
-                    Collections.sort(directoryContent, new FileComparators.SortAlphaAscending());
-                    sortOrder = SortDialog.ALPHA_ASCENDING;
-                } else {
-                    Collections.sort(directoryContent, new FileComparators.SortAlphaDescending());
-                    sortOrder = SortDialog.ALPHA_DESCENDING;
-                }
-                break;
-            case R.id.radio_sort_date:
-                if (sortOrderId == R.id.radio_sort_ascending) {
-                    Collections.sort(directoryContent, new FileComparators.SortModTimeAscending());
-                    sortOrder = SortDialog.MOD_TIME_ASCENDING;
-                } else {
-                    Collections.sort(directoryContent, new FileComparators.SortModTimeDescending());
-                    sortOrder = SortDialog.MOD_TIME_DESCENDING;
-                }
-                break;
-            case R.id.radio_sort_size:
-                if (sortOrderId == R.id.radio_sort_ascending) {
-                    Collections.sort(directoryContent, new FileComparators.SortSizeAscending());
-                    sortOrder = SortDialog.SIZE_ASCENDING;
-                } else {
-                    Collections.sort(directoryContent, new FileComparators.SortSizeDescending());
-                    sortOrder = SortDialog.SIZE_DESCENDING;
-                }
-                break;
+        if (sortById == R.id.radio_sort_name) {
+            if (sortOrderId == R.id.radio_sort_ascending) {
+                Collections.sort(directoryContent, new FileComparators.SortAlphaAscending());
+                sortOrder = SortDialog.ALPHA_ASCENDING;
+            } else {
+                Collections.sort(directoryContent, new FileComparators.SortAlphaDescending());
+                sortOrder = SortDialog.ALPHA_DESCENDING;
+            }
+        } else if (sortById == R.id.radio_sort_date) {
+            if (sortOrderId == R.id.radio_sort_ascending) {
+                Collections.sort(directoryContent, new FileComparators.SortModTimeAscending());
+                sortOrder = SortDialog.MOD_TIME_ASCENDING;
+            } else {
+                Collections.sort(directoryContent, new FileComparators.SortModTimeDescending());
+                sortOrder = SortDialog.MOD_TIME_DESCENDING;
+            }
+        } else if (sortById == R.id.radio_sort_size) {
+            if (sortOrderId == R.id.radio_sort_ascending) {
+                Collections.sort(directoryContent, new FileComparators.SortSizeAscending());
+                sortOrder = SortDialog.SIZE_ASCENDING;
+            } else {
+                Collections.sort(directoryContent, new FileComparators.SortSizeDescending());
+                sortOrder = SortDialog.SIZE_DESCENDING;
+            }
         }
         directoryObject.setContent(directoryContent);
 
@@ -1294,64 +1287,55 @@ public class FileExplorerFragment extends Fragment implements   FileExplorerRecy
         PopupMenu popupMenu = new PopupMenu(context, view);
         popupMenu.getMenuInflater().inflate(R.menu.file_explorer_menu, popupMenu.getMenu());
         popupMenu.setOnMenuItemClickListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.action_file_properties:
-                    showFileProperties(fileItem);
-                    break;
-                case R.id.action_open_as:
-                    showOpenAsDialog(fileItem);
-                    break;
-                case R.id.action_serve:
-                    String[] serveOptions = getResources().getStringArray(R.array.serve_options);
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setItems(serveOptions, (dialog, which) -> {
-                        Intent intent = new Intent(getContext(), StreamingService.class);
-                        switch (which) {
-                            case 0: // HTTP
-                                intent.putExtra(StreamingService.SERVE_PATH_ARG, fileItem.getPath());
-                                intent.putExtra(StreamingService.REMOTE_ARG, remote);
-                                intent.putExtra(StreamingService.SERVE_PROTOCOL, StreamingService.SERVE_HTTP);
-                                intent.putExtra(StreamingService.SHOW_NOTIFICATION_TEXT, true);
-                                break;
-                            case 1: // Webdav
-                                intent.putExtra(StreamingService.SERVE_PATH_ARG, fileItem.getPath());
-                                intent.putExtra(StreamingService.REMOTE_ARG, remote);
-                                intent.putExtra(StreamingService.SERVE_PROTOCOL, StreamingService.SERVE_WEBDAV);
-                                intent.putExtra(StreamingService.SHOW_NOTIFICATION_TEXT, true);
-                                break;
-                            default:
-                                return;
-                        }
-                        // GH-87: Release old server
-                        context.stopService(new Intent(context, StreamingService.class));
-                        tryStartService(context, intent);
-                    });
-                    builder.setTitle(R.string.pick_a_protocol);
-                    builder.show();
-                    break;
-                case R.id.action_download:
-                    downloadList = new ArrayList<>();
-                    downloadList.add(fileItem);
-                    downloadFiles();
-                    break;
-                case R.id.action_move:
-                    moveFiles(Collections.singletonList(fileItem));
-                    break;
-                case R.id.action_rename:
-                    renameItem = fileItem;
-                    renameFiles();
-                    break;
-                case R.id.action_delete:
-                    deleteFiles(Collections.singletonList(fileItem));
-                    break;
-                case R.id.action_link:
-                    new LinkTask().execute(fileItem.getPath());
-                    break;
-                case R.id.action_sync:
-                    showSyncDialog(fileItem.getPath());
-                    break;
-                default:
-                    return false;
+            int itemId = item.getItemId();
+            if (itemId == R.id.action_file_properties) {
+                showFileProperties(fileItem);
+            } else if (itemId == R.id.action_open_as) {
+                showOpenAsDialog(fileItem);
+            } else if (itemId == R.id.action_serve) {
+                String[] serveOptions = getResources().getStringArray(R.array.serve_options);
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setItems(serveOptions, (dialog, which) -> {
+                    Intent intent = new Intent(getContext(), StreamingService.class);
+                    switch (which) {
+                        case 0: // HTTP
+                            intent.putExtra(StreamingService.SERVE_PATH_ARG, fileItem.getPath());
+                            intent.putExtra(StreamingService.REMOTE_ARG, remote);
+                            intent.putExtra(StreamingService.SERVE_PROTOCOL, StreamingService.SERVE_HTTP);
+                            intent.putExtra(StreamingService.SHOW_NOTIFICATION_TEXT, true);
+                            break;
+                        case 1: // Webdav
+                            intent.putExtra(StreamingService.SERVE_PATH_ARG, fileItem.getPath());
+                            intent.putExtra(StreamingService.REMOTE_ARG, remote);
+                            intent.putExtra(StreamingService.SERVE_PROTOCOL, StreamingService.SERVE_WEBDAV);
+                            intent.putExtra(StreamingService.SHOW_NOTIFICATION_TEXT, true);
+                            break;
+                        default:
+                            return;
+                    }
+                    // GH-87: Release old server
+                    context.stopService(new Intent(context, StreamingService.class));
+                    tryStartService(context, intent);
+                });
+                builder.setTitle(R.string.pick_a_protocol);
+                builder.show();
+            } else if (itemId == R.id.action_download) {
+                downloadList = new ArrayList<>();
+                downloadList.add(fileItem);
+                downloadFiles();
+            } else if (itemId == R.id.action_move) {
+                moveFiles(Collections.singletonList(fileItem));
+            } else if (itemId == R.id.action_rename) {
+                renameItem = fileItem;
+                renameFiles();
+            } else if (itemId == R.id.action_delete) {
+                deleteFiles(Collections.singletonList(fileItem));
+            } else if (itemId == R.id.action_link) {
+                new LinkTask().execute(fileItem.getPath());
+            } else if (itemId == R.id.action_sync) {
+                showSyncDialog(fileItem.getPath());
+            } else {
+                return false;
             }
             return true;
         });

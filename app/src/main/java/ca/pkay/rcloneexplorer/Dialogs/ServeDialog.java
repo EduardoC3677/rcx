@@ -146,20 +146,14 @@ public class ServeDialog extends DialogFragment {
     private void sendCallback() {
         int selectedProtocolId = protocol.getCheckedRadioButtonId();
         int selectedProtocol;
-        switch (selectedProtocolId) {
-            case R.id.radio_ftp:
-                selectedProtocol = Rclone.SERVE_PROTOCOL_FTP;
-                break;
-            case R.id.radio_dlna:
-                selectedProtocol = Rclone.SERVE_PROTOCOL_DLNA;
-                break;
-            case R.id.radio_webdav:
-                selectedProtocol = Rclone.SERVE_PROTOCOL_WEBDAV;
-                break;
-            case R.id.radio_http:
-            default:
-                selectedProtocol = Rclone.SERVE_PROTOCOL_HTTP;
-                break;
+        if (selectedProtocolId == R.id.radio_ftp) {
+            selectedProtocol = Rclone.SERVE_PROTOCOL_FTP;
+        } else if (selectedProtocolId == R.id.radio_dlna) {
+            selectedProtocol = Rclone.SERVE_PROTOCOL_DLNA;
+        } else if (selectedProtocolId == R.id.radio_webdav) {
+            selectedProtocol = Rclone.SERVE_PROTOCOL_WEBDAV;
+        } else {
+            selectedProtocol = Rclone.SERVE_PROTOCOL_HTTP;
         }
 
         PreferenceManager.getDefaultSharedPreferences(context)

@@ -198,22 +198,21 @@ public class FilePicker extends AppCompatActivity implements    FilePickerAdapte
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_select_all:
-                filePickerAdapter.toggleSelectAll();
-                return true;
-            case R.id.action_sort:
-                showSortMenu();
-                return true;
-            case R.id.action_new_folder:
-                newFolderDialog();
-                return true;
-            case R.id.action_storage:
-                showStorageMenu();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-
+        int id = item.getItemId();
+        if (id == R.id.action_select_all) {
+            filePickerAdapter.toggleSelectAll();
+            return true;
+        } else if (id == R.id.action_sort) {
+            showSortMenu();
+            return true;
+        } else if (id == R.id.action_new_folder) {
+            newFolderDialog();
+            return true;
+        } else if (id == R.id.action_storage) {
+            showStorageMenu();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
     }
 
@@ -409,34 +408,30 @@ public class FilePicker extends AppCompatActivity implements    FilePickerAdapte
     }
 
     private void sortSelected(int sortById, int sortOrderId) {
-        switch (sortById) {
-            case R.id.radio_sort_name:
-                if (sortOrderId == R.id.radio_sort_ascending) {
-                    Collections.sort(fileList, new FileComparators.SortFileAlphaAscending());
-                    sortOrder = SortDialog.ALPHA_ASCENDING;
-                } else {
-                    Collections.sort(fileList, new FileComparators.SortFileAlphaDescending());
-                    sortOrder = SortDialog.ALPHA_DESCENDING;
-                }
-                break;
-            case R.id.radio_sort_date:
-                if (sortOrderId == R.id.radio_sort_ascending) {
-                    Collections.sort(fileList, new FileComparators.SortFileModTimeAscending());
-                    sortOrder = SortDialog.MOD_TIME_ASCENDING;
-                } else {
-                    Collections.sort(fileList, new FileComparators.SortFileModTimeDescending());
-                    sortOrder = SortDialog.MOD_TIME_DESCENDING;
-                }
-                break;
-            case R.id.radio_sort_size:
-                if (sortOrderId == R.id.radio_sort_ascending) {
-                    Collections.sort(fileList, new FileComparators.SortFileSizeAscending());
-                    sortOrder = SortDialog.SIZE_ASCENDING;
-                } else {
-                    Collections.sort(fileList, new FileComparators.SortFileSizeDescending());
-                    sortOrder = SortDialog.SIZE_DESCENDING;
-                }
-                break;
+        if (sortById == R.id.radio_sort_name) {
+            if (sortOrderId == R.id.radio_sort_ascending) {
+                Collections.sort(fileList, new FileComparators.SortFileAlphaAscending());
+                sortOrder = SortDialog.ALPHA_ASCENDING;
+            } else {
+                Collections.sort(fileList, new FileComparators.SortFileAlphaDescending());
+                sortOrder = SortDialog.ALPHA_DESCENDING;
+            }
+        } else if (sortById == R.id.radio_sort_date) {
+            if (sortOrderId == R.id.radio_sort_ascending) {
+                Collections.sort(fileList, new FileComparators.SortFileModTimeAscending());
+                sortOrder = SortDialog.MOD_TIME_ASCENDING;
+            } else {
+                Collections.sort(fileList, new FileComparators.SortFileModTimeDescending());
+                sortOrder = SortDialog.MOD_TIME_DESCENDING;
+            }
+        } else if (sortById == R.id.radio_sort_size) {
+            if (sortOrderId == R.id.radio_sort_ascending) {
+                Collections.sort(fileList, new FileComparators.SortFileSizeAscending());
+                sortOrder = SortDialog.SIZE_ASCENDING;
+            } else {
+                Collections.sort(fileList, new FileComparators.SortFileSizeDescending());
+                sortOrder = SortDialog.SIZE_DESCENDING;
+            }
         }
         filePickerAdapter.updateData(fileList);
 

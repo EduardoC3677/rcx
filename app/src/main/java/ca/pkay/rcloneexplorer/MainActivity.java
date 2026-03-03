@@ -326,39 +326,32 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
-        switch (id) {
-            case R.id.nav_remotes:
-                startRemotesFragment();
-                break;
-            case R.id.nav_import:
-                Uri configUri;
-                if (rclone.isConfigFileCreated()) {
-                    warnUserAboutOverwritingConfiguration();
-                } else if(null != (configUri = rclone.searchExternalConfig())) {
-                    askUseExternalConfig(configUri);
-                } else {
-                    importConfigFile();
-                }
-                break;
-            case R.id.nav_export:
-                if (rclone.isConfigFileCreated()) {
-                    exportConfigFile();
-                } else {
-                    Toasty.info(this,  getString(R.string.no_config_found), Toast.LENGTH_SHORT, true).show();
-                }
-                break;
-            case R.id.nav_settings:
-                Intent settingsIntent = new Intent(this, SettingsActivity.class);
-                tryStartActivityForResult(this, settingsIntent, SETTINGS_CODE);
-                break;
-            case R.id.nav_about:
-                Intent aboutIntent = new Intent(this, AboutActivity.class);
-                startActivity(aboutIntent);
-                break;
-            case R.id.nav_tools:
-                Intent toolsIntent = new Intent(this, ca.pkay.rcloneexplorer.features.ToolsActivity.class);
-                startActivity(toolsIntent);
-                break;
+        if (id == R.id.nav_remotes) {
+            startRemotesFragment();
+        } else if (id == R.id.nav_import) {
+            Uri configUri;
+            if (rclone.isConfigFileCreated()) {
+                warnUserAboutOverwritingConfiguration();
+            } else if(null != (configUri = rclone.searchExternalConfig())) {
+                askUseExternalConfig(configUri);
+            } else {
+                importConfigFile();
+            }
+        } else if (id == R.id.nav_export) {
+            if (rclone.isConfigFileCreated()) {
+                exportConfigFile();
+            } else {
+                Toasty.info(this,  getString(R.string.no_config_found), Toast.LENGTH_SHORT, true).show();
+            }
+        } else if (id == R.id.nav_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            tryStartActivityForResult(this, settingsIntent, SETTINGS_CODE);
+        } else if (id == R.id.nav_about) {
+            Intent aboutIntent = new Intent(this, AboutActivity.class);
+            startActivity(aboutIntent);
+        } else if (id == R.id.nav_tools) {
+            Intent toolsIntent = new Intent(this, ca.pkay.rcloneexplorer.features.ToolsActivity.class);
+            startActivity(toolsIntent);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
