@@ -96,17 +96,33 @@ def ndkPrefix = configureNdk()
 def goBinary = configureGo()
 
 
-task fetchRclone(type: Exec) {
-    mkdir "gopath"
-    environment 'GOPATH', goPath
-    environment "GO111MODULE", "on"
-    commandLine 'go', 'get', '-d', repositoryRef
-
-    ignoreExitValue true
-    errorOutput = new ByteArrayOutputStream()
+task fetchRclone {
     doLast {
-        if (executionResult.get().exitValue != 0) {
-            throw new GradleException("Error running go get: \n${errorOutput.toString()}")
+        mkdir "gopath"
+        def fetchDir = file("${goPath}/_fetch")
+        fetchDir.mkdirs()
+
+        // Initialize a temporary Go module (required for go get in Go 1.22+)
+        exec {
+            workingDir fetchDir
+            environment 'GOPATH', goPath
+            commandLine 'go', 'mod', 'init', 'rcx-fetch'
+            ignoreExitValue true
+        }
+
+        // Download rclone source into the module cache
+        def errOut = new ByteArrayOutputStream()
+        def result = exec {
+            workingDir fetchDir
+            environment 'GOPATH', goPath
+            environment 'GO111MODULE', 'on'
+            commandLine 'go', 'get', repositoryRef
+            ignoreExitValue true
+            errorOutput = errOut
+        }
+
+        if (result.exitValue != 0) {
+            throw new GradleException("Error running go get: \n${errOut.toString()}")
         }
     }
 }
