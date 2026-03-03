@@ -1,0 +1,169 @@
+name: Release
+
+on:
+  # Trigger automatically when a version tag is pushed (e.g. v1.14.0, v1.14.0-beta1)
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+
+  # Allow manual release creation from the Actions tab
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.14.0)'
+        required: true
+        default: 'v1.14.0'
+      prerelease:
+        description: 'Mark as pre-release'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['true', 'false']
+
+permissions:
+  contents: write   # needed to create the GitHub Release and upload assets
+
+jobs:
+  release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ──────────────────────────────────────────────────────────────
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history for release notes generation
+
+      # ── Toolchain ─────────────────────────────────────────────────────────────
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Set up Go 1.22
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: true
+
+      # ── Native rclone libraries ────────────────────────────────────────────────
+      - name: Cache rclone native libraries
+        id: cache-rclone
+        uses: actions/cache@v4
+        with:
+          path: app/lib
+          key: rclone-libs-${{ runner.os }}-${{ hashFiles('rclone/build.gradle') }}
+
+      - name: Install NDK 27.2.12479018
+        if: steps.cache-rclone.outputs.cache-hit != 'true'
+        run: |
+          echo "y" | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager \
+            "ndk;27.2.12479018" --sdk_root=${ANDROID_HOME}
+
+      - name: Build rclone native libraries
+        if: steps.cache-rclone.outputs.cache-hit != 'true'
+        run: ./gradlew rclone:buildNative --no-daemon
+
+      # ── App build ─────────────────────────────────────────────────────────────
+      - name: Resolve release tag
+        id: tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Inject versionName from tag
+        run: |
+          TAG=${{ steps.tag.outputs.TAG }}
+          # Strip leading 'v' for the versionName string
+          VERSION="${TAG#v}"
+          sed -i "s/versionName '.*'/versionName '${VERSION}'/" app/build.gradle
+
+      - name: Build OSS release APKs
+        run: ./gradlew assembleOssRelease --no-daemon
+
+      # ── Optional APK signing ───────────────────────────────────────────────────
+      # Add the following secrets to your repository to enable signing:
+      #   KEYSTORE_B64        Base64-encoded .jks / .keystore file
+      #   KEY_ALIAS           Key alias inside the keystore
+      #   KEYSTORE_PASSWORD   Keystore password
+      #   KEY_PASSWORD        Key password
+      - name: Sign APKs
+        if: ${{ secrets.KEYSTORE_B64 != '' }}
+        run: |
+          echo "${{ secrets.KEYSTORE_B64 }}" | base64 --decode > /tmp/release.jks
+          BUILD_TOOLS=$(ls ${ANDROID_HOME}/build-tools | sort -V | tail -1)
+          for apk in app/build/outputs/apk/oss/release/*.apk; do
+            signed="${apk%.apk}-signed.apk"
+            ${ANDROID_HOME}/build-tools/${BUILD_TOOLS}/apksigner sign \
+              --ks /tmp/release.jks \
+              --ks-key-alias "${{ secrets.KEY_ALIAS }}" \
+              --ks-pass "pass:${{ secrets.KEYSTORE_PASSWORD }}" \
+              --key-pass "pass:${{ secrets.KEY_PASSWORD }}" \
+              --out "$signed" \
+              "$apk"
+            # Replace unsigned with signed so downstream steps are signing-agnostic
+            rm "$apk"
+            mv "$signed" "$apk"
+          done
+          rm -f /tmp/release.jks
+
+      # ── Collect APKs for release ───────────────────────────────────────────────
+      - name: Rename APKs with version tag
+        id: apks
+        run: |
+          TAG=${{ steps.tag.outputs.TAG }}
+          mkdir -p release-apks
+          for apk in app/build/outputs/apk/oss/release/*.apk; do
+            base=$(basename "$apk" .apk)
+            cp "$apk" "release-apks/${base}-${TAG}.apk"
+          done
+          echo "APK_DIR=release-apks" >> $GITHUB_OUTPUT
+
+      - name: Upload release APKs as CI artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apks-${{ steps.tag.outputs.TAG }}
+          path: release-apks/
+          retention-days: 90
+
+      # ── GitHub Release ─────────────────────────────────────────────────────────
+      - name: Determine pre-release flag
+        id: prerelease
+        run: |
+          TAG=${{ steps.tag.outputs.TAG }}
+          MANUAL="${{ github.event.inputs.prerelease }}"
+          if [[ "$MANUAL" == "true" ]] || [[ "$TAG" =~ (alpha|beta|rc|dev) ]]; then
+            echo "IS_PRERELEASE=true" >> $GITHUB_OUTPUT
+          else
+            echo "IS_PRERELEASE=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.TAG }}
+          name: "RCX ${{ steps.tag.outputs.TAG }}"
+          prerelease: ${{ steps.prerelease.outputs.IS_PRERELEASE }}
+          generate_release_notes: true
+          files: release-apks/*.apk
+          body: |
+            ## RCX ${{ steps.tag.outputs.TAG }}
+
+            ### Install
+            Choose the APK matching your device architecture:
+            | File | Architecture |
+            |------|-------------|
+            | `*-armeabi-v7a-*` | 32-bit ARM (older phones) |
+            | `*-arm64-v8a-*`   | 64-bit ARM (most modern phones) |
+            | `*-x86_64-*`      | 64-bit x86 (emulators / some Chromebooks) |
+            | `*-universal-*`   | All architectures (largest file) |
+
+            ### What's new
+            See the full changelog above (auto-generated from commits since the last release).
+
+            > **rclone version**: 1.68.2 – configs created on Android are fully compatible with desktop rclone and vice versa.

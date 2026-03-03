@@ -61,10 +61,16 @@ public class Rclone {
     }
 
     private String[] createCommand(String ...args) {
-        boolean loggingEnabled = PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(context.getString(R.string.pref_key_logs), false);
-        int staticArgSize = loggingEnabled ? 4 : 3;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean loggingEnabled = sharedPreferences.getBoolean(context.getString(R.string.pref_key_logs), false);
+        long bwLimitBytes = sharedPreferences.getLong(context.getString(R.string.pref_key_bwlimit), 0L);
+        String bwlimitArg = ca.pkay.rcloneexplorer.util.BandwidthUtils.INSTANCE.toBwlimitArg(bwLimitBytes);
+
+        // Base: rclone --config <path> [--bwlimit <limit>] [-vvv] <args...>
+        int staticArgSize = 3;
+        if (bwlimitArg != null) staticArgSize += 2;
+        if (loggingEnabled) staticArgSize += 1;
+
         int arraySize = args.length + staticArgSize;
         String[] command = new String[arraySize];
 
@@ -72,22 +78,32 @@ public class Rclone {
         command[1] = "--config";
         command[2] = rcloneConf;
 
-        if(loggingEnabled) {
-            command[3] = "-vvv";
+        int pos = 3;
+        if (bwlimitArg != null) {
+            command[pos++] = "--bwlimit";
+            command[pos++] = bwlimitArg;
+        }
+        if (loggingEnabled) {
+            command[pos++] = "-vvv";
         }
 
-        int i = staticArgSize;
         for (String arg : args) {
-            command[i++] = arg;
+            command[pos++] = arg;
         }
         return command;
     }
 
     private String[] createCommandWithOptions(String ...args) {
-        boolean loggingEnabled = PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .getBoolean(context.getString(R.string.pref_key_logs), false);
-        int staticArgSize = loggingEnabled ? 8 : 7;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean loggingEnabled = sharedPreferences.getBoolean(context.getString(R.string.pref_key_logs), false);
+        long bwLimitBytes = sharedPreferences.getLong(context.getString(R.string.pref_key_bwlimit), 0L);
+        String bwlimitArg = ca.pkay.rcloneexplorer.util.BandwidthUtils.INSTANCE.toBwlimitArg(bwLimitBytes);
+
+        // Base: rclone --cache-chunk-path <p> --cache-db-path <p> --config <path> [--bwlimit <limit>] [-vvv] <args...>
+        int staticArgSize = 7;
+        if (bwlimitArg != null) staticArgSize += 2;
+        if (loggingEnabled) staticArgSize += 1;
+
         int arraySize = args.length + staticArgSize;
         String[] command = new String[arraySize];
         String cachePath = context.getCacheDir().getAbsolutePath();
@@ -100,13 +116,17 @@ public class Rclone {
         command[5] = "--config";
         command[6] = rcloneConf;
 
-        if(loggingEnabled) {
-            command[7] = "-vvv";
+        int pos = 7;
+        if (bwlimitArg != null) {
+            command[pos++] = "--bwlimit";
+            command[pos++] = bwlimitArg;
+        }
+        if (loggingEnabled) {
+            command[pos++] = "-vvv";
         }
 
-        int i = staticArgSize;
         for (String arg : args) {
-            command[i++] = arg;
+            command[pos++] = arg;
         }
         return command;
     }

@@ -153,6 +153,9 @@
     <string name="intro_community_switch">Contribute error reports</string>
     <string name="pref_key_stream_max" translatable="false">pref_key_stream_max</string>
     <string name="pref_key_logs" translatable="false">pref_key_logs</string>
+    <string name="pref_key_bwlimit" translatable="false">bwlimit_bytes_per_second</string>
+    <string name="pref_title_bwlimit">Bandwidth limit</string>
+    <string name="pref_summary_bwlimit_off">No bandwidth limit</string>
     <string name="pref_key_color_primary" translatable="false">pref_key_color_primary</string>
     <string name="pref_key_color_accent" translatable="false">pref_key_color_accent</string>
     <string name="pref_key_dark_theme" translatable="false">pref_key_dark_theme</string>

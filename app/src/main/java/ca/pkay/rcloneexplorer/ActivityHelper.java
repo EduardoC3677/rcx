@@ -93,8 +93,14 @@ public class ActivityHelper {
         int customPrimaryColor = sharedPreferences.getInt(context.getString(R.string.pref_key_color_primary), -1);
         int customAccentColor = sharedPreferences.getInt(context.getString(R.string.pref_key_color_accent), -1);
         Boolean isDarkTheme = sharedPreferences.getBoolean(context.getString(R.string.pref_key_dark_theme), false);
-        context.getTheme().applyStyle(CustomColorHelper.getPrimaryColorTheme(context, customPrimaryColor), true);
-        context.getTheme().applyStyle(CustomColorHelper.getAccentColorTheme(context, customAccentColor), true);
+        // Only apply custom colors if the user has explicitly picked one.
+        // When no custom color is stored (-1), let the base theme (Monet on API 31+) take effect.
+        if (customPrimaryColor != -1) {
+            context.getTheme().applyStyle(CustomColorHelper.getPrimaryColorTheme(context, customPrimaryColor), true);
+        }
+        if (customAccentColor != -1) {
+            context.getTheme().applyStyle(CustomColorHelper.getAccentColorTheme(context, customAccentColor), true);
+        }
         if (isDarkTheme) {
             context.getTheme().applyStyle(R.style.DarkTheme, true);
         } else {
