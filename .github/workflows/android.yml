@@ -28,6 +28,10 @@ jobs:
         go-version: 1.16
       id: go
     - name: Force NDK version
+      run: |
+         sudo apt-get update -y -qq
+         sudo apt-get install sdkmanager -y -qq
+    - name: Force NDK version
       run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;22.1.7171670"
     - name: Build rclone
       run: ./gradlew rclone:buildNative
